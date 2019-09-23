@@ -2,7 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	slct "../pkg"
+	Tool "../pkg"
+
+	git "github.com/src-d/go-git"
 	"github.com/spf13/cobra"
 )
 
@@ -22,12 +27,25 @@ var createCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Création d'un nouveau projet nommé %s", args[0])
-		// create root directory with children
-		// les bases de données
-		// le backend
-		// le frontend
-		// Setup .env file for env variables
-		// create docker-compose.prod.yaml (bdd, back, front) 
+		/// SETUP ALL YAML FILES WITH ACCORDING TODO .config.yaml ///
+		// create root directory and children (?usefull to have directory path?), init value
+		bdd := Tool{"bdd", nil}
+		back := Tool{"backend", nil}
+		front := Tool{"frontend", nil}
 
+		os.MkdirAll(args[0] + "/back", 0777)
+		os.MkdirAll(args[0] + "/front", 0777)
+
+		// Select tools
+		// les bases de données
+		bdd.Select()
+		// le backend
+		back.Select()
+		// le frontend
+		front.Select()
+		// where to link bdd ?
+
+		// Setup .env file for env variables
+		// create docker-compose.prod.yaml (bdd, back, front if existe) 
 	},
 }
