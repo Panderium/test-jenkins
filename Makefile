@@ -1,4 +1,3 @@
-
 PROJECTNAME := $(shell basename "$(PWD)")
 
 # Go related variables.
