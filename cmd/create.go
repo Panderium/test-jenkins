@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	tool "../pkg"
+	"../pkg/tool"
+	"../pkg/config"
 
 	git "gopkg.in/src-d/go-git.v4"
 	"github.com/spf13/cobra"
@@ -35,24 +36,36 @@ var createCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		
 		defer os.RemoveAll("../.templates")
-		fmt.Println("Création d'un nouveau projet nommé %s", args[0])
+		
+		projectRoot := args[0]
+		fmt.Println("Création d'un nouveau projet nommé %s", projectRoot)
 		/// SETUP ALL YAML FILES WITH ACCORDING TODO .config.yaml ///
 		// create root directory and children (?usefull to have directory path?), init value
 		bdd := tool.Tool{Name: "BDD", Values: nil}
 		back := tool.Tool{Name: "Back", Values: nil}
 		front := tool.Tool{Name: "Front", Values: nil}
 
-		os.MkdirAll(args[0] + "/back", 0777)
-		os.MkdirAll(args[0] + "/front", 0777)
+		conf:= config.Config{}
+
+		os.MkdirAll(projectRoot + "/back", 0777)
+		os.MkdirAll(projectRoot + "/front", 0777)
 
 		// Select tools
-		// les bases de données
 		bdd.Select()
-		// le backend
 		back.Select()
-		// le frontend
 		front.Select()
+
+		// update config files with tools
+		conf.UpdateToolConfig(&bdd)
+		conf.UpdateToolConfig(&back)
+		conf.UpdateToolConfig(&front)
+
+		// 
+
+		// build .config.yaml
+		conf.BuildConfigFile()
 
 		// where to link bdd ?
 
