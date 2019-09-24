@@ -1,6 +1,8 @@
-package slct
+package tool
 
 import (
+	"os"
+	"io/ioutil"
 	"fmt"
 
 	"github.com/AlecAivazis/survey"
@@ -12,36 +14,55 @@ type Tool struct {
 	Values []string
 }
 
-func (t Tool) getOption() []string {
-	return 
+
+func (t *Tool) getOption() []string {
+	var options []string
+	path := "../.templates/" + t.Name
+	c, err := ioutil.ReadDir(path)
+    if err != nil {
+		fmt.Printf("impossible de trouver les templates")
+		os.Exit(1)
+	}
+
+    for _, entry := range c {
+		if entry.IsDir() {
+			options = append(options, entry.Name())
+		}
+    }
+	return options
 }
 
-func (t Tool) onlyOneSelect() {
+func (t *Tool) onlyOneSelect() {
+	value := ""
 	prompt := &survey.Select{
-		Message: "Choisir une technologie pour le " + t.Name ,
+		Message: "Choisir une technologie pour le " + t.Name,
 		Options: t.getOption(), // []string
 	}
-	survey.AskOne(prompt, &t.Values)
+	survey.AskOne(prompt, &value)
+	t.Values = append(t.Values, value)
 }
 
-func (t Tool) multiSelect() {
+func (t *Tool) multiSelect() {
+	values := []string{}
 	prompt := &survey.MultiSelect{
-		Message: "What days do you prefer:",
-		Options: []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
+		Message: "Choisir une technologie pour le " + t.Name,
+		Options: t.getOption(),
 	}
-	survey.AskOne(prompt, &t.Values)
+	survey.AskOne(prompt, &values)
+	t.Values = append(t.Values, values...)
 }
 
 // Select TODO doc
-func (t Tool) Select() {
+func (t *Tool) Select() {
 	switch t.Name {
-	case "bdd":
+	case "BDD":
 		t.multiSelect()
-	case "backend":
+	case "Back":
 		t.onlyOneSelect()
-	case "frontend":
+	case "Front":
 		t.onlyOneSelect()
 	default:
-		fmt.Errorf("%s non pris en charge", t.Name)
+		fmt.Printf("%s non pris en charge", t.Name)
+		os.Exit(1)
 	}
 }
