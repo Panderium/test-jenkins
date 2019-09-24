@@ -1,0 +1,46 @@
+version: ${VERSION}
+
+services:
+
+{{range .Services}}
+  {{.Project}}_{{.Name}}:
+    image: ${REPOSITORY}/${{{.Name}}_IMAGE}
+{{end}}
+
+{{range BDD}}
+  origin_db:
+    image: ${REPOSITORY}/${SERVICE_1_IMAGE}
+    container_name: postgres_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=test
+    networks:
+      - origin-network
+{{end}}
+
+{{if Back}}
+
+{{end}}
+
+{{if Front}}
+    
+{{end}}    
+  #origin_back:
+   # build:
+    #  context: .
+     # args:
+#        REPOSITORY: $REPOSITORY
+ #   container_name: origin_back
+  #  image: origin_back_image
+   # ports:
+#      - 8080:8080
+ #   depends_on:
+  #    - origin_db
+   # networks:
+    #  - origin-network
+
+
+networks:
+   :
+

@@ -36,7 +36,7 @@ func (t *Tool) onlyOneSelect() {
 	value := ""
 	prompt := &survey.Select{
 		Message: "Choisir une technologie pour le " + t.Name,
-		Options: t.getOption(), // []string
+		Options: t.getOption(),
 	}
 	survey.AskOne(prompt, &value)
 	t.Values = append(t.Values, value)

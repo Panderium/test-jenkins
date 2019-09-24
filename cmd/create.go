@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"io/ioutil"
 
 	"../pkg/tool"
 	"../pkg/config"
@@ -51,7 +52,7 @@ var createCmd = &cobra.Command{
 
 		os.MkdirAll(projectRoot + "/back", 0777)
 		os.MkdirAll(projectRoot + "/front", 0777)
-
+		
 		// Select tools
 		bdd.Select()
 		back.Select()
@@ -62,13 +63,15 @@ var createCmd = &cobra.Command{
 		conf.UpdateToolConfig(&back)
 		conf.UpdateToolConfig(&front)
 
-		// 
+		// link db with
+		conf.BddLinkWith()
+
 
 		// build .config.yaml
-		conf.BuildConfigFile()
+		yamlConf := conf.BuildConfigFile()
+		ioutil.WriteFile(projectRoot + "/.config.yaml", yamlConf, 0644)
 
-		// where to link bdd ?
-
+		
 		// Setup .env file for env variables
 		// create docker-compose.prod.yaml (bdd, back, front if existe) 
 	},

@@ -1,18 +1,37 @@
 package config
 
 import (
-	"os"
 	"fmt"
-	//"io/ioutil"
+	"os"
+
 	"../tool"
+
+	"github.com/AlecAivazis/survey"
 	"gopkg.in/yaml.v2"
 )
 
 // Config TODO
 type Config struct {
-	Bdd []string
-	Back []string
+	Bdd   []string
+	Back  []string
 	Front []string
+	Link  map[string]string
+}
+
+// BddLinkWith TODO
+func (c *Config) BddLinkWith() {
+	var linkedTo string
+	c.Link = make(map[string]string)
+
+	for _, bdd := range c.Bdd {
+		prompt := &survey.Select{
+			Message: "Avec quelle partie du projet la base de données " + bdd + " est-elle reliée ?",
+			Options: []string{"back", "front"},
+		}
+
+		survey.AskOne(prompt, &linkedTo)
+		c.Link[bdd] = linkedTo
+	}
 }
 
 // UpdateToolConfig TODO
@@ -30,11 +49,11 @@ func (c *Config) UpdateToolConfig(t *tool.Tool) {
 }
 
 // BuildConfigFile TODO
-func (c *Config) BuildConfigFile() {
+func (c *Config) BuildConfigFile() []byte {
 	yamlFile, err := yaml.Marshal(&c)
 	if err != nil {
 		fmt.Printf("Impossible de construire le fichier de config")
 		os.Exit(1)
 	}
-	fmt.Printf(string(yamlFile))
+	return yamlFile
 }
