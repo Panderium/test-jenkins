@@ -1,0 +1,17 @@
+version: ${VERSION_COMPOSE}
+services:
+
+  test_front:
+    build:
+      context: .
+      args:
+        REPOSITORY: ${REPOSITORY}
+    ports:
+      - ${front_port}:${front_port}
+    networks:
+      - test-network
+
+
+networks:
+   test-network:
+

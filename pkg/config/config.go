@@ -20,8 +20,8 @@ func (c *Config) UpdateProjectName(name string) {
 	c.ProjectName = name
 }
 
-// UpdateToolConfig TODO
-func (c *Config) UpdateToolConfig(t tool.Tool) {
+// UpdateServices TODO
+func (c *Config) UpdateServices(t tool.Tool) {
 	c.Services = append(c.Services, t)
 }
 

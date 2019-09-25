@@ -1,0 +1,32 @@
+version: ${VERSION_COMPOSE}
+services:
+
+  test_mongo_db:
+    container_name: test_mongo_db
+    image: ${REPOSITORY}/${mongo_IMAGE}
+    # call bdd template for envnetworks:
+      - test-network
+
+  test_mysql_db:
+    container_name: test_mysql_db
+    image: ${REPOSITORY}/${mysql_IMAGE}
+    # call bdd template for envnetworks:
+      - test-network
+
+  test_back:
+    build:
+      context: .
+      args:
+        REPOSITORY: ${REPOSITORY}
+    ports:
+      - ${back_port}:${back_port}
+    depends_on:
+      - test_mongo_db
+      - test_mysql_db
+      networks:
+      - test-network
+
+
+networks:
+   test-network:
+

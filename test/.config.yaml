@@ -1,14 +1,17 @@
-projectname: ""
+projectname: test
 services:
 - name: bdd
   values:
+  - mongo
   - mysql
-  - postgresql
-  link: []
+  link:
+  - back
+  - back
 - name: back
   values:
   - django
   link:
+  - mongo
   - mysql
 - name: front
   values:

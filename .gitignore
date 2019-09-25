@@ -19,3 +19,5 @@ vendor/
 
 # binary directory
 build/
+
+.templates/

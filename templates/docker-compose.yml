@@ -1,31 +1,31 @@
-version: ${VERSION}
-{{$projectName := .Project}}
+version: ${VERSION_COMPOSE}
+{{$projectName := .ProjectName -}}
 
 services:
-{{range .Services}}
+{{range .Services -}}
 
-  {{if eq .Name "bdd" }}
+  {{- if eq .Name "bdd" -}}
     {{range .Values}}
   {{$projectName}}_{{.}}_db:
     container_name: {{$projectName}}_{{.}}_db
-    image: ${REPOSITORY}/${{{.}}_IMAGE}
+    image: ${REPOSITORY}/${ {{- .}}_IMAGE}
     # call bdd template for env
-    {{end}}
+    {{- end -}}
   {{else}}
   {{$projectName}}_{{.Name}}:
     build:
       context: .
       args:
-        REPOSITORY: $REPOSITORY
+        REPOSITORY: ${REPOSITORY}
     ports:
-      - ${{.Name}}_port:${{.Name}}_port
-    {{if .Link}}
+      - ${ {{- .Name}}_port}:${ {{- .Name}}_port}
+    {{if .Link -}}
     depends_on:
-      {{range .Link}}
-      - {{.}}
-      {{end}}
-    {{end}}
-  {{end}}
+      {{range .Link -}}
+      - {{$projectName}}_{{.}}_db
+      {{end -}}
+    {{- end -}}
+  {{- end -}}
     networks:
       - {{$projectName}}-network
 {{end}}

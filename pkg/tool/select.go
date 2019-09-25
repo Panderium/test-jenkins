@@ -1,33 +1,34 @@
 package tool
 
 import (
-	"os"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/AlecAivazis/survey"
 )
 
 // Tool TODO doc
 type Tool struct {
-	Name string
+	Name   string
 	Values []string
-	Link []string
+	Link   []string
 }
 
-
-// LinkWith TODO
+// LinkWith TODO t bdd, tool other tools
 func (t *Tool) LinkWith(tool *Tool) {
 	var response string
-
-	for _, value := range t.Values{
-		prompt := &survey.Select{
-			Message: "Est-ce que la base de données " + value + " doit être reliée au " + tool.Name ,
-			Options: []string{"oui", "non"},
-		}
-		survey.AskOne(prompt, &response)
-		if response == "oui" {
-			tool.Link = append(tool.Link, value)
+	if tool.Values != nil {
+		for _, value := range t.Values {
+			prompt := &survey.Select{
+				Message: "Est-ce que la base de données " + value + " doit être reliée au " + tool.Name,
+				Options: []string{"oui", "non"},
+			}
+			survey.AskOne(prompt, &response)
+			if response == "oui" {
+				tool.Link = append(tool.Link, value)
+				t.Link = append(t.Link, tool.Name)
+			}
 		}
 	}
 }
@@ -36,16 +37,16 @@ func (t *Tool) getOption() []string {
 	var options []string
 	path := "../.templates/" + t.Name
 	c, err := ioutil.ReadDir(path)
-    if err != nil {
+	if err != nil {
 		fmt.Printf("impossible de trouver les templates")
 		os.Exit(1)
 	}
 
-    for _, entry := range c {
+	for _, entry := range c {
 		if entry.IsDir() {
 			options = append(options, entry.Name())
 		}
-    }
+	}
 	return options
 }
 
