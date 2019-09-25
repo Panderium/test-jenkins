@@ -1,0 +1,51 @@
+version: ${VERSION_COMPOSE}
+{{$projectName := .ProjectName -}}
+
+services:
+{{range .Services -}}
+
+  {{- if eq .Name "bdd" -}}
+    {{range .Values}}
+  {{$projectName}}_{{.}}_db:
+    container_name: {{$projectName}}_{{.}}_db
+    image: ${REPOSITORY}/${ {{- .}}_IMAGE}
+    # call bdd template for env
+    networks:
+      - net
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${ {{- .}}_PREPROD}
+      {{end}}
+  {{else}}
+  {{$projectName}}_{{.Name}}:
+    build:
+      context: .
+      args:
+        REPOSITORY: ${REPOSITORY}
+    {{if .Link -}}
+    depends_on:
+      {{range .Link -}}
+      - {{$projectName}}_{{.}}_db
+      {{end -}}
+    {{end}}
+    networks:
+      - net
+      - traefik_net
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${ {{- $projectName}}_{{.Name}}_PREPROD}
+      labels:
+        traefik.frontend.rule: Host:${ {{- $projectName}}_{{.Name}}_URL}.preprod.${DNS}
+        traefik.port: ${ {{- $projectName}}_{{.Name}}_PORT}
+        traefik.enable: "true"
+        traefik.docker.network: traefik_net
+  {{- end -}}
+{{end}}
+
+networks:
+   net:
+   traefik_net:
+    external: true
+

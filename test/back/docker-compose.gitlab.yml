@@ -20,8 +20,6 @@ services:
       context: .
       args:
         REPOSITORY: ${REPOSITORY}
-    ports:
-      - ${test_back_PORT}:${test_back_PORT}
     depends_on:
       - test_mongo_db
       - test_mysql_db

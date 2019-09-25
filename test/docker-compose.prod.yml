@@ -1,0 +1,84 @@
+version: ${VERSION_COMPOSE}
+services:
+
+  test_mongo_db:
+    container_name: test_mongo_db
+    image: ${REPOSITORY}/${mongo_IMAGE}
+    # call bdd template for env
+    networks:
+      - net
+    volumes:
+      - test_mongo_db:/var/lib/mongo/test-data
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${mongo_PROD}
+      
+  test_mysql_db:
+    container_name: test_mysql_db
+    image: ${REPOSITORY}/${mysql_IMAGE}
+    # call bdd template for env
+    networks:
+      - net
+    volumes:
+      - test_mysql_db:/var/lib/mysql/test-data
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${mysql_PROD}
+      
+  
+
+  test_back:
+    build:
+      context: .
+      args:
+        REPOSITORY: ${REPOSITORY}
+    depends_on:
+      - test_mongo_db
+      - test_mysql_db
+      
+    networks:
+      - net
+      - traefik_net
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${test_back_PPROD}
+      labels:
+        traefik.frontend.rule: Host:${test_back_URL}.${DNS}
+        traefik.port: ${test_back_PORT}
+        traefik.enable: "true"
+        traefik.docker.network: traefik_net
+
+  
+
+  test_front:
+    build:
+      context: .
+      args:
+        REPOSITORY: ${REPOSITORY}
+    
+    networks:
+      - net
+      - traefik_net
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${test_front_PPROD}
+      labels:
+        traefik.frontend.rule: Host:${test_front_URL}.${DNS}
+        traefik.port: ${test_front_PORT}
+        traefik.enable: "true"
+        traefik.docker.network: traefik_net
+
+  
+volumes:
+    test_mongo_db:
+    test_mysql_db:
+    
+
+networks:
+   net:
+   traefik_net:
+    external: true

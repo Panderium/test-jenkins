@@ -15,7 +15,7 @@ import (
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	_, err := git.PlainClone("../.templates", false, &git.CloneOptions{
+	_, err := git.PlainClone(".templates", false, &git.CloneOptions{
 		URL:      "http://10.1.38.31/afougerouse/templates.git",
 		Progress: os.Stdout,
 	})

@@ -9,11 +9,11 @@ services:
   - back
 - name: back
   values:
-  - django
+  - cpp
   link:
   - mongo
   - mysql
 - name: front
   values:
-  - vuejs
+  - angular
   link: []

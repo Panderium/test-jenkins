@@ -6,8 +6,6 @@ services:
       context: .
       args:
         REPOSITORY: ${REPOSITORY}
-    ports:
-      - ${test_front_PORT}:${test_front_PORT}
     
     networks:
       - test-network
