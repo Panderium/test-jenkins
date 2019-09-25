@@ -49,9 +49,6 @@ var createCmd = &cobra.Command{
 
 		conf := config.Config{}
 
-		os.MkdirAll(projectRoot+"/back", 0777)
-		os.MkdirAll(projectRoot+"/front", 0777)
-
 		// update config file with project name
 		conf.UpdateProjectName(projectRoot)
 
@@ -69,6 +66,11 @@ var createCmd = &cobra.Command{
 		conf.UpdateServices(back)
 		conf.UpdateServices(front)
 
+		// retrieve files and put it in tmp/bdd, back and front folders
+		conf.RetrieveBdd()
+		conf.Retrieve("back")
+		conf.Retrieve("front")
+
 		// build .config.yaml
 		yamlConf := conf.BuildConfigFile()
 		ioutil.WriteFile(projectRoot+"/.config.yaml", yamlConf, 0644)
@@ -78,6 +80,10 @@ var createCmd = &cobra.Command{
 
 		// create docker-compose.prod with .env
 		conf.CreateComposeProdAndEnv()
+
+		// clean up
+
+		// git init
 
 	},
 }

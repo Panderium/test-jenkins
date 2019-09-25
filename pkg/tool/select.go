@@ -35,7 +35,7 @@ func (t *Tool) LinkWith(tool *Tool) {
 
 func (t *Tool) getOption() []string {
 	var options []string
-	path := "../.templates/" + t.Name
+	path := ".templates/" + t.Name
 	c, err := ioutil.ReadDir(path)
 	if err != nil {
 		fmt.Printf("impossible de trouver les templates")
