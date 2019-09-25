@@ -1,0 +1,16 @@
+projectname: ""
+services:
+- name: bdd
+  values:
+  - mysql
+  - postgresql
+  link: []
+- name: back
+  values:
+  - django
+  link:
+  - mysql
+- name: front
+  values:
+  - vuejs
+  link: []

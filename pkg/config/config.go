@@ -6,46 +6,23 @@ import (
 
 	"../tool"
 
-	"github.com/AlecAivazis/survey"
 	"gopkg.in/yaml.v2"
 )
 
 // Config TODO
 type Config struct {
-	Bdd   []string
-	Back  []string
-	Front []string
-	Link  map[string]string
+	ProjectName string
+	Services []tool.Tool
 }
 
-// BddLinkWith TODO
-func (c *Config) BddLinkWith() {
-	var linkedTo string
-	c.Link = make(map[string]string)
-
-	for _, bdd := range c.Bdd {
-		prompt := &survey.Select{
-			Message: "Avec quelle partie du projet la base de données " + bdd + " est-elle reliée ?",
-			Options: []string{"back", "front"},
-		}
-
-		survey.AskOne(prompt, &linkedTo)
-		c.Link[bdd] = linkedTo
-	}
+// UpdateProjectName TODO
+func (c *Config) UpdateProjectName(name string) {
+	c.ProjectName = name
 }
 
 // UpdateToolConfig TODO
-func (c *Config) UpdateToolConfig(t *tool.Tool) {
-	switch t.Name {
-	case "BDD":
-		c.Bdd = append(c.Bdd, t.Values...)
-	case "Back":
-		c.Back = append(c.Back, t.Values...)
-	case "Front":
-		c.Front = append(c.Front, t.Values...)
-	default:
-		fmt.Println("%s non pris en charge", t.Name)
-	}
+func (c *Config) UpdateToolConfig(t tool.Tool) {
+	c.Services = append(c.Services, t)
 }
 
 // BuildConfigFile TODO

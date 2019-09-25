@@ -1,46 +1,35 @@
 version: ${VERSION}
+{{$projectName := .Project}}
 
 services:
-
 {{range .Services}}
-  {{.Project}}_{{.Name}}:
-    image: ${REPOSITORY}/${{{.Name}}_IMAGE}
-{{end}}
 
-{{range BDD}}
-  origin_db:
-    image: ${REPOSITORY}/${SERVICE_1_IMAGE}
-    container_name: postgres_db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=test
+  {{if eq .Name "bdd" }}
+    {{range .Values}}
+  {{$projectName}}_{{.}}_db:
+    container_name: {{$projectName}}_{{.}}_db
+    image: ${REPOSITORY}/${{{.}}_IMAGE}
+    # call bdd template for env
+    {{end}}
+  {{else}}
+  {{$projectName}}_{{.Name}}:
+    build:
+      context: .
+      args:
+        REPOSITORY: $REPOSITORY
+    ports:
+      - ${{.Name}}_port:${{.Name}}_port
+    {{if .Link}}
+    depends_on:
+      {{range .Link}}
+      - {{.}}
+      {{end}}
+    {{end}}
+  {{end}}
     networks:
-      - origin-network
+      - {{$projectName}}-network
 {{end}}
-
-{{if Back}}
-
-{{end}}
-
-{{if Front}}
-    
-{{end}}    
-  #origin_back:
-   # build:
-    #  context: .
-     # args:
-#        REPOSITORY: $REPOSITORY
- #   container_name: origin_back
-  #  image: origin_back_image
-   # ports:
-#      - 8080:8080
- #   depends_on:
-  #    - origin_db
-   # networks:
-    #  - origin-network
-
 
 networks:
-   :
+   {{$projectName}}-network:
 

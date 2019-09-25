@@ -12,8 +12,25 @@ import (
 type Tool struct {
 	Name string
 	Values []string
+	Link []string
 }
 
+
+// LinkWith TODO
+func (t *Tool) LinkWith(tool *Tool) {
+	var response string
+
+	for _, value := range t.Values{
+		prompt := &survey.Select{
+			Message: "Est-ce que la base de données " + value + " doit être reliée au " + tool.Name ,
+			Options: []string{"oui", "non"},
+		}
+		survey.AskOne(prompt, &response)
+		if response == "oui" {
+			tool.Link = append(tool.Link, value)
+		}
+	}
+}
 
 func (t *Tool) getOption() []string {
 	var options []string
@@ -35,7 +52,7 @@ func (t *Tool) getOption() []string {
 func (t *Tool) onlyOneSelect() {
 	value := ""
 	prompt := &survey.Select{
-		Message: "Choisir une technologie pour le " + t.Name,
+		Message: "Choisir une technologie pour la/le " + t.Name,
 		Options: t.getOption(),
 	}
 	survey.AskOne(prompt, &value)
@@ -45,7 +62,7 @@ func (t *Tool) onlyOneSelect() {
 func (t *Tool) multiSelect() {
 	values := []string{}
 	prompt := &survey.MultiSelect{
-		Message: "Choisir une technologie pour le " + t.Name,
+		Message: "Choisir une ou plusieurs technologie(s) pour la/le " + t.Name,
 		Options: t.getOption(),
 	}
 	survey.AskOne(prompt, &values)
@@ -55,14 +72,14 @@ func (t *Tool) multiSelect() {
 // Select TODO doc
 func (t *Tool) Select() {
 	switch t.Name {
-	case "BDD":
+	case "bdd":
 		t.multiSelect()
-	case "Back":
+	case "back":
 		t.onlyOneSelect()
-	case "Front":
+	case "front":
 		t.onlyOneSelect()
 	default:
-		fmt.Printf("%s non pris en charge", t.Name)
+		fmt.Printf("type de données %s non pris en charge", t.Name)
 		os.Exit(1)
 	}
 }

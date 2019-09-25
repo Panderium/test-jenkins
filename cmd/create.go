@@ -41,31 +41,34 @@ var createCmd = &cobra.Command{
 		defer os.RemoveAll("../.templates")
 		
 		projectRoot := args[0]
-		fmt.Println("Création d'un nouveau projet nommé %s", projectRoot)
+		fmt.Println("Création d'un nouveau projet nommé ", projectRoot)
 		/// SETUP ALL YAML FILES WITH ACCORDING TODO .config.yaml ///
 		// create root directory and children (?usefull to have directory path?), init value
-		bdd := tool.Tool{Name: "BDD", Values: nil}
-		back := tool.Tool{Name: "Back", Values: nil}
-		front := tool.Tool{Name: "Front", Values: nil}
+		bdd := tool.Tool{Name: "bdd", Values: nil, Link: nil}
+		back := tool.Tool{Name: "back", Values: nil, Link: nil}
+		front := tool.Tool{Name: "front", Values: nil, Link: nil}
 
 		conf:= config.Config{}
 
 		os.MkdirAll(projectRoot + "/back", 0777)
 		os.MkdirAll(projectRoot + "/front", 0777)
+
+		// update config file with project name
+		conf.UpdateProjectName(projectRoot)
 		
 		// Select tools
 		bdd.Select()
 		back.Select()
 		front.Select()
 
+		// Link bdd(s) with front and/or back
+		bdd.LinkWith(&back)
+		bdd.LinkWith(&front)
+
 		// update config files with tools
-		conf.UpdateToolConfig(&bdd)
-		conf.UpdateToolConfig(&back)
-		conf.UpdateToolConfig(&front)
-
-		// link db with
-		conf.BddLinkWith()
-
+		conf.UpdateToolConfig(bdd)
+		conf.UpdateToolConfig(back)
+		conf.UpdateToolConfig(front)
 
 		// build .config.yaml
 		yamlConf := conf.BuildConfigFile()
