@@ -18,7 +18,7 @@ type Tool struct {
 // LinkWith TODO t bdd, tool other tools
 func (t *Tool) LinkWith(tool *Tool) {
 	var response string
-	if tool.Values != nil {
+	if tool.Values != nil && tool.Values[0] != "aucune" {
 		for _, value := range t.Values {
 			prompt := &survey.Select{
 				Message: "Est-ce que la base de données " + value + " doit être reliée au " + tool.Name,
@@ -54,7 +54,7 @@ func (t *Tool) onlyOneSelect() {
 	value := ""
 	prompt := &survey.Select{
 		Message: "Choisir une technologie pour la/le " + t.Name,
-		Options: t.getOption(),
+		Options: append(t.getOption(), "aucune"),
 	}
 	survey.AskOne(prompt, &value)
 	t.Values = append(t.Values, value)
@@ -73,11 +73,11 @@ func (t *Tool) multiSelect() {
 // Select TODO doc
 func (t *Tool) Select() {
 	switch t.Name {
-	case "bdd":
+	case "BDD":
 		t.multiSelect()
-	case "back":
+	case "Back":
 		t.onlyOneSelect()
-	case "front":
+	case "Front":
 		t.onlyOneSelect()
 	default:
 		fmt.Printf("type de données %s non pris en charge", t.Name)

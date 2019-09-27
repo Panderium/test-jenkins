@@ -1,19 +1,19 @@
-version: ${VERSION_COMPOSE}
+version: "3.4"
 {{$projectName := .ProjectName -}}
 
 services:
 {{range .Services -}}
 
-  {{- if eq .Name "bdd" -}}
+  {{- if eq .Name "BDD" -}}
     {{range .Values}}
   {{$projectName}}_{{.}}_db:
     container_name: {{$projectName}}_{{.}}_db
-    image: ${REPOSITORY}/${ {{- .}}_IMAGE}
-    # call bdd template for env
+    image: ${REPOSITORY_PROD}/${ {{- .}}_IMAGE}
+    {{retrieveComposeEnvVariable .}}
     networks:
       - net
     volumes:
-      - {{$projectName}}_{{.}}_db:/var/lib/{{.}}/{{$projectName}}-data
+      - /data/{{$projectName}}_{{.}}:/var/lib/{{.}}/data/{{$projectName}}_{{.}}
     deploy:
       placement:
         constraints:
@@ -21,10 +21,7 @@ services:
       {{end}}
   {{else}}
   {{$projectName}}_{{.Name}}:
-    build:
-      context: .
-      args:
-        REPOSITORY: ${REPOSITORY}
+    image: ${REPOSITORY_PROD}/${ {{- $projectName}}_{{.Name}}_IMAGE}
     {{if .Link -}}
     depends_on:
       {{range .Link -}}
@@ -47,14 +44,6 @@ services:
   {{end}}
 {{end}}
 
-{{- range .Services -}}
-  {{- if eq .Name "bdd" -}}
-volumes:
-    {{range .Values -}}
-  {{$projectName}}_{{.}}_db:
-    {{end -}}
-  {{- end -}}
-{{- end}}
 
 networks:
    net:

@@ -43,9 +43,9 @@ var createCmd = &cobra.Command{
 		fmt.Println("Création d'un nouveau projet nommé ", projectRoot)
 		/// SETUP ALL YAML FILES WITH ACCORDING TODO .config.yaml ///
 		// create root directory and children (?usefull to have directory path?), init value
-		bdd := tool.Tool{Name: "bdd", Values: nil, Link: nil}
-		back := tool.Tool{Name: "back", Values: nil, Link: nil}
-		front := tool.Tool{Name: "front", Values: nil, Link: nil}
+		bdd := tool.Tool{Name: "BDD", Values: nil, Link: nil}
+		back := tool.Tool{Name: "Back", Values: nil, Link: nil}
+		front := tool.Tool{Name: "Front", Values: nil, Link: nil}
 
 		conf := config.Config{}
 
@@ -67,9 +67,7 @@ var createCmd = &cobra.Command{
 		conf.UpdateServices(front)
 
 		// retrieve files and put it in tmp/bdd, back and front folders
-		conf.RetrieveBdd()
-		conf.Retrieve("back")
-		conf.Retrieve("front")
+		conf.RetrieveFiles()
 
 		// build .config.yaml
 		yamlConf := conf.BuildConfigFile()
@@ -84,6 +82,7 @@ var createCmd = &cobra.Command{
 		// clean up
 
 		// git init
+		conf.GitInit()
 
 	},
 }

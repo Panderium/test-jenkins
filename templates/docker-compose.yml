@@ -1,15 +1,15 @@
-version: ${VERSION_COMPOSE}
+version: "3.4"
 {{$projectName := .ProjectName -}}
 
 services:
 {{range .Services -}}
 
-  {{- if eq .Name "bdd" -}}
+  {{- if eq .Name "BDD" -}}
     {{range .Values}}
   {{$projectName}}_{{.}}_db:
     container_name: {{$projectName}}_{{.}}_db
-    image: ${REPOSITORY}/${ {{- .}}_IMAGE}
-    # call bdd template for env
+    image: ${REPOSITORY_PROD}/${ {{- .}}_IMAGE}
+    {{retrieveComposeEnvVariable .}}
     networks:
       - {{$projectName}}-network
     {{- end -}}
@@ -17,10 +17,15 @@ services:
   {{$projectName}}_{{.Name}}:
     build:
       context: .
+      dockerfile: ${DOCKERFILE}
       args:
-        REPOSITORY: ${REPOSITORY}
+        REPOSITORY: ${REPOSITORY_PROD}
+        PORT: ${ {{- $projectName}}_{{.Name}}_PORT}
+    container_name: {{$projectName}}_{{.Name}}
     ports:
       - ${ {{- $projectName}}_{{.Name}}_PORT}:${ {{- $projectName}}_{{.Name}}_PORT}
+    volumes:
+      - ./app:/app
     {{if .Link -}}
     depends_on:
       {{range .Link -}}
