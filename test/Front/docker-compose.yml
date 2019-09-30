@@ -1,0 +1,36 @@
+version: "3.4"
+services:
+
+  test_mongo_db:
+    container_name: test_mongo_db
+    image: ${REPOSITORY_PROD}/${mongo_IMAGE}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${PASSWORD}
+      MONGO_INITDB_DATABASE: ${DATABASE}
+    networks:
+      - test-network  
+
+  test_Front:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE}
+      args:
+        REPOSITORY: ${REPOSITORY_PROD}
+        PORT: ${test_Front_PORT}
+    container_name: test_Front
+    ports:
+      - ${test_Front_PORT}:${test_Front_PORT}
+    volumes:
+      - ./app:/app
+    depends_on:
+      - test_mongo_db
+      
+    networks:
+      - test-network
+    
+
+
+networks:
+   test-network:
+

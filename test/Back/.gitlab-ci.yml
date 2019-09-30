@@ -1,0 +1,145 @@
+image: pull.nexus.prod.lab.solutec/docker:stable
+
+variables:
+  #APP_NAME: ci-example
+  YEAR: 2019
+  SEMESTER: 1
+  GROUP_NAME: group
+  APP_VERSION: 0.0.1
+  SONAR_URL: http://sonarqube.lab.solutec
+  SONAR_LOGIN: 1e16acb0a9fb0f5b9e1d0534104b404638ada711
+  SONAR_PROJECT_KEY: test-app
+  SONAR_SOURCES: ./
+  SONAR_TOOL: mvn
+
+
+stages:
+  - build
+  - test
+  - code_quality
+  - push
+  - cleanup
+  - deploy
+
+
+before_script:
+  - apk update && apk upgrade
+  - docker login -u <username> -p <password> pull.nexus.prod.lab.solutec
+  - docker login -u <username> -p <password> push.nexus.preprod.lab.solutec
+
+
+
+
+build_job:
+  stage : build
+  script :
+    - echo "Testing build..."
+    
+    - echo "Building..."
+    - docker-compose -f docker-compose.gitlab.yml up --build -d -t 5
+    - echo "Build complete !"
+
+    
+
+test_job:
+  stage : test
+  script :
+    - echo "Testing application..."
+      
+    - echo "Starting unit tests..."
+    - docker exec -t ${CI_PROJECT_NAME} unit-tests
+    - echo "Unit tests passed !"
+      
+    - echo "Starting integration tests..."
+    - docker exec -t ${CI_PROJECT_NAME} integration-tests
+    - echo "Integration tests passed !"
+      
+    - echo "Starting functional tests..."
+    - docker exec -t ${CI_PROJECT_NAME} functional-tests
+    - echo "Funtional tests passed !"
+        
+        
+        
+        
+code_quality_job:
+  stage : code_quality
+  script :
+    - chmod +x ./sonar-scanner.sh
+    - ./sonar-scanner.sh ${SONAR_TOOL} ${SONAR_PROJECT_KEY} ${SONAR_URL} ${SONAR_LOGIN} ${SONAR_SOURCES}
+  allow_failure : true
+  
+     
+
+push_job:
+  stage: push
+  only:
+    - master
+  script:
+    - echo "Storing the image to Nexus..."
+    
+    - echo "Peparing Docker image..."
+    - docker tag ${CI_PROJECT_NAME}_image push.nexus.preprod.lab.solutec/${CI_PROJECT_NAME}:latest
+    - docker tag ${CI_PROJECT_NAME}_image push.nexus.preprod.lab.solutec/${CI_PROJECT_NAME}:${APP_VERSION}
+
+    - echo "Pushing to Nexus..."
+    - docker push push.nexus.preprod.lab.solutec/${CI_PROJECT_NAME}:${APP_VERSION}
+    - docker push push.nexus.preprod.lab.solutec/${CI_PROJECT_NAME}:latest
+    - echo "Push was successful !"
+    
+    - echo "Storing complete !"
+  after_script:
+    - echo "Cleaning..."
+    - docker rmi -f push.nexus.preprod.lab.solutec/${CI_PROJECT_NAME}:${APP_VERSION}
+    - docker rmi -f push.nexus.preprod.lab.solutec/${CI_PROJECT_NAME}:latest
+    - echo "Clean complete !"
+
+
+
+  
+cleanup_job:
+  stage : cleanup
+  script :
+    - echo "Cleaning..."
+    - docker-compose -f docker-compose.gitlab.yml down --rmi all -t 5
+    - docker container prune
+    - echo "Clean complete !"
+  when : always
+
+
+
+
+deploy_job:
+  stage : deploy
+  only:
+    - master
+  before_script:
+  
+   - 'which ssh-agent || ( apk add openssh-client )'
+
+   - eval $(ssh-agent -s)
+   
+   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+
+   - mkdir -p ~/.ssh
+   - chmod 700 ~/.ssh
+  
+   - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+   - chmod 644 ~/.ssh/known_hosts
+  script: 
+    - ssh -p22 username@10.1.38.41 "mkdir -p ~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}"
+    - ssh -p22 username@10.1.38.41 "mkdir -p ~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/preprod"
+    - scp docker-compose.preprod.yml username@10.1.38.41:~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/preprod
+    - ssh -p22 username@10.1.38.41 "docker stack deploy --prune -c "~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/preprod/docker-compose.preprod.yml" --with-registry-auth ${GROUP_NAME}_preprod "
+# Si .env utilisé :
+#    - scp .env username@10.1.38.41:~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/preprod
+#    - ssh -p22 username@10.1.38.41 "env $(cat .env | grep ^[A-Z] | xargs) docker stack deploy --prune -c "~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/preprod/docker-compose.preprod.yml" --with-registry-auth ${GROUP_NAME}_preprod "
+
+    - ssh -p22 username@10.1.38.41 "mkdir -p ~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/prod"
+    - scp docker-compose.prod.yml username@10.1.38.41:~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/prod
+# Si .env utilisé :
+#    - scp .env username@10.1.38.41:~/deploy/${YEAR}/${SEMESTER}/${GROUP_NAME}/${CI_PROJECT_NAME}/prod
+
+
+    - sleep 60
+    - ssh -p22 username@10.1.38.41 "docker stack ps --no-trunc ${GROUP_NAME}_preprod "
+    - ssh -p22 username@10.1.38.41 "docker service ls -f name=${GROUP_NAME}_preprod --format "{{.Name}}" | xargs -n1 docker service logs"

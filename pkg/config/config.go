@@ -16,6 +16,20 @@ type Config struct {
 	Services    []tool.Tool
 }
 
+func addCIFiles(dest string) error {
+	gitlabCIFile := ".templates/CI/.gitlab-ci.yml"
+	sonarQubeFile := ".templates/CI/sonar-scanner.sh"
+
+	if err :=utils.CopyFile(gitlabCIFile, dest + "/.gitlab-ci.yml"); err != nil {
+		return err
+	}
+	if err := utils.CopyFile(sonarQubeFile, dest + "/sonar-scanner.sh"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // RetrieveFiles TODO
 func (c *Config) RetrieveFiles() {
 	var src string
@@ -27,7 +41,12 @@ func (c *Config) RetrieveFiles() {
 			dest = c.ProjectName + "/" + service.Name
 			err := utils.CopyDir(src, dest)
 			if err != nil {
-				fmt.Printf("imposible de récupérer les éléments pour construire le %s", service.Name)
+				fmt.Printf("imposible de récupérer les éléments pour construire le %s\n", service.Name)
+			}
+			err = addCIFiles(dest)
+			if err != nil {
+				fmt.Printf("imposible de récupérer les fichiers de CI/CD pour le %s\n", service.Name)
+				fmt.Println(err)
 			}
 		}
 	}

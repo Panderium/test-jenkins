@@ -1,0 +1,82 @@
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+app/.Python
+app/env/
+app/build/
+app/develop-eggs/
+app/downloads/
+app/dist/
+app/eggs/
+app/lib/
+app/lib64/
+app/parts/
+app/sdist/
+app/var/
+app/*.egg-info/
+app/.installed.cfg
+app/*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+app/*.manifest
+app/*.spec
+
+# Installer logs
+app/pip-log.txt
+app/pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+
+### Django ###
+app/*.log
+app/*.pot
+app/*.pyc
+app/__pycache__/
+app/local_settings.py
+
+app/.env
+app/db.sqlite3

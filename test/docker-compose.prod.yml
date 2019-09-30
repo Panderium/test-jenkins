@@ -1,0 +1,65 @@
+version: "3.4"
+services:
+
+  test_mongo_db:
+    container_name: test_mongo_db
+    image: ${REPOSITORY_PROD}/${mongo_IMAGE}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${PASSWORD}
+      MONGO_INITDB_DATABASE: ${DATABASE}
+    networks:
+      - net
+    volumes:
+      - /data/test_mongo:/var/lib/mongo/data/test_mongo
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${mongo_PROD}
+      
+  
+
+  test_Back:
+    image: ${REPOSITORY_PROD}/${test_Back_IMAGE}
+    
+    networks:
+      - net
+      - traefik_net
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${test_Back_PPROD}
+      labels:
+        traefik.frontend.rule: Host:${test_Back_URL}.${DNS}
+        traefik.port: ${test_Back_PORT}
+        traefik.enable: "true"
+        traefik.docker.network: traefik_net
+
+  
+
+  test_Front:
+    image: ${REPOSITORY_PROD}/${test_Front_IMAGE}
+    depends_on:
+      - test_mongo_db
+      
+    networks:
+      - net
+      - traefik_net
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${test_Front_PPROD}
+      labels:
+        traefik.frontend.rule: Host:${test_Front_URL}.${DNS}
+        traefik.port: ${test_Front_PORT}
+        traefik.enable: "true"
+        traefik.docker.network: traefik_net
+
+  
+
+
+
+networks:
+   net:
+   traefik_net:
+    external: true

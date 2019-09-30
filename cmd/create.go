@@ -79,8 +79,6 @@ var createCmd = &cobra.Command{
 		// create docker-compose.prod with .env
 		conf.CreateComposeProdAndEnv()
 
-		// clean up
-
 		// git init
 		conf.GitInit()
 
