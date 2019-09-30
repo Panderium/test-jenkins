@@ -17,13 +17,13 @@ func (conf *Config) splitConfig() (Config, Config) {
 	for _, service := range conf.Services {
 		if service.Name == "BDD" {
 			for i, bdd := range service.Values {
-				if service.Link[i] == "Front" {
+				if service.Link[i] == "front" {
 					confFront.UpdateServices(tool.Tool{Name: "BDD", Values: []string{bdd}})
 				} else {
 					confBack.UpdateServices(tool.Tool{Name: "BDD", Values: []string{bdd}})
 				}
 			}
-		} else if service.Name == "Back" {
+		} else if service.Name == "back" {
 			confBack.UpdateServices(service)
 		} else {
 			confFront.UpdateServices(service)
@@ -77,19 +77,19 @@ func (conf *Config) buildFile(templateFile, file string) {
 // CreateComposeAndEnv TODO
 func (conf *Config) CreateComposeAndEnv() {
 	confBack, confFront := conf.splitConfig()
-	if _, err := os.Stat(confBack.ProjectName + "/Back"); !os.IsNotExist(err) {
-		confBack.buildFile("templates/docker-compose.yml", confBack.ProjectName+"/Back/docker-compose.yml")
-		confBack.buildFile("templates/docker-compose.gitlab.yml", confBack.ProjectName+"/Back/docker-compose.gitlab.yml")
-		confBack.buildFile("templates/docker-compose.gitlab.prod.yml", confBack.ProjectName+"/Back/docker-compose.gitlab.prod.yml")
-		confBack.buildFile("templates/docker-compose.preprod.yml", confBack.ProjectName+"/Back/docker-compose.preprod.yml")
-		confBack.buildFile("templates/.env", confBack.ProjectName+"/Back/.env")
+	if _, err := os.Stat(confBack.ProjectName + "/back"); !os.IsNotExist(err) {
+		confBack.buildFile("templates/docker-compose.yml", confBack.ProjectName+"/back/docker-compose.yml")
+		confBack.buildFile("templates/docker-compose.gitlab.yml", confBack.ProjectName+"/back/docker-compose.gitlab.yml")
+		confBack.buildFile("templates/docker-compose.gitlab.prod.yml", confBack.ProjectName+"/back/docker-compose.gitlab.prod.yml")
+		confBack.buildFile("templates/docker-compose.preprod.yml", confBack.ProjectName+"/back/docker-compose.preprod.yml")
+		confBack.buildFile("templates/.env", confBack.ProjectName+"/back/.env")
 	}
-	if _, err := os.Stat(confBack.ProjectName + "/Front"); !os.IsNotExist(err) {
-		confFront.buildFile("templates/docker-compose.yml", confFront.ProjectName+"/Front/docker-compose.yml")
-		confFront.buildFile("templates/docker-compose.gitlab.yml", confFront.ProjectName+"/Front/docker-compose.gitlab.yml")
-		confFront.buildFile("templates/docker-compose.gitlab.prod.yml", confFront.ProjectName+"/Front/docker-compose.gitlab.prod.yml")
-		confFront.buildFile("templates/docker-compose.preprod.yml", confFront.ProjectName+"/Front/docker-compose.preprod.yml")
-		confFront.buildFile("templates/.env", confFront.ProjectName+"/Front/.env")
+	if _, err := os.Stat(confFront.ProjectName + "/front"); !os.IsNotExist(err) {
+		confFront.buildFile("templates/docker-compose.yml", confFront.ProjectName+"/front/docker-compose.yml")
+		confFront.buildFile("templates/docker-compose.gitlab.yml", confFront.ProjectName+"/front/docker-compose.gitlab.yml")
+		confFront.buildFile("templates/docker-compose.gitlab.prod.yml", confFront.ProjectName+"/front/docker-compose.gitlab.prod.yml")
+		confFront.buildFile("templates/docker-compose.preprod.yml", confFront.ProjectName+"/front/docker-compose.preprod.yml")
+		confFront.buildFile("templates/.env", confFront.ProjectName+"/front/.env")
 	}
 }
 

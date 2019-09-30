@@ -75,9 +75,9 @@ func (t *Tool) Select() {
 	switch t.Name {
 	case "BDD":
 		t.multiSelect()
-	case "Back":
+	case "back":
 		t.onlyOneSelect()
-	case "Front":
+	case "front":
 		t.onlyOneSelect()
 	default:
 		fmt.Printf("type de données %s non pris en charge", t.Name)

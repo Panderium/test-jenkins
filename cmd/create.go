@@ -44,8 +44,8 @@ var createCmd = &cobra.Command{
 		/// SETUP ALL YAML FILES WITH ACCORDING TODO .config.yaml ///
 		// create root directory and children (?usefull to have directory path?), init value
 		bdd := tool.Tool{Name: "BDD", Values: nil, Link: nil}
-		back := tool.Tool{Name: "Back", Values: nil, Link: nil}
-		front := tool.Tool{Name: "Front", Values: nil, Link: nil}
+		back := tool.Tool{Name: "back", Values: nil, Link: nil}
+		front := tool.Tool{Name: "front", Values: nil, Link: nil}
 
 		conf := config.Config{}
 
