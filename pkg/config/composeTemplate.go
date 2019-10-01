@@ -78,23 +78,23 @@ func (conf *Config) buildFile(templateFile, file string) {
 func (conf *Config) CreateComposeAndEnv() {
 	confBack, confFront := conf.splitConfig()
 	if _, err := os.Stat(confBack.ProjectName + "/back"); !os.IsNotExist(err) {
-		confBack.buildFile("templates/docker-compose.yml", confBack.ProjectName+"/back/docker-compose.yml")
-		confBack.buildFile("templates/docker-compose.gitlab.yml", confBack.ProjectName+"/back/docker-compose.gitlab.yml")
-		confBack.buildFile("templates/docker-compose.gitlab.prod.yml", confBack.ProjectName+"/back/docker-compose.gitlab.prod.yml")
-		confBack.buildFile("templates/docker-compose.preprod.yml", confBack.ProjectName+"/back/docker-compose.preprod.yml")
-		confBack.buildFile("templates/.env", confBack.ProjectName+"/back/.env")
+		confBack.buildFile(".templates/templates/docker-compose.yml", confBack.ProjectName+"/back/docker-compose.yml")
+		confBack.buildFile(".templates/templates/docker-compose.gitlab.yml", confBack.ProjectName+"/back/docker-compose.gitlab.yml")
+		confBack.buildFile(".templates/templates/docker-compose.gitlab.prod.yml", confBack.ProjectName+"/back/docker-compose.gitlab.prod.yml")
+		confBack.buildFile(".templates/templates/docker-compose.preprod.yml", confBack.ProjectName+"/back/docker-compose.preprod.yml")
+		confBack.buildFile(".templates/templates/.env", confBack.ProjectName+"/back/.env")
 	}
 	if _, err := os.Stat(confFront.ProjectName + "/front"); !os.IsNotExist(err) {
-		confFront.buildFile("templates/docker-compose.yml", confFront.ProjectName+"/front/docker-compose.yml")
-		confFront.buildFile("templates/docker-compose.gitlab.yml", confFront.ProjectName+"/front/docker-compose.gitlab.yml")
-		confFront.buildFile("templates/docker-compose.gitlab.prod.yml", confFront.ProjectName+"/front/docker-compose.gitlab.prod.yml")
-		confFront.buildFile("templates/docker-compose.preprod.yml", confFront.ProjectName+"/front/docker-compose.preprod.yml")
-		confFront.buildFile("templates/.env", confFront.ProjectName+"/front/.env")
+		confFront.buildFile(".templates/templates/docker-compose.yml", confFront.ProjectName+"/front/docker-compose.yml")
+		confFront.buildFile(".templates/templates/docker-compose.gitlab.yml", confFront.ProjectName+"/front/docker-compose.gitlab.yml")
+		confFront.buildFile(".templates/templates/docker-compose.gitlab.prod.yml", confFront.ProjectName+"/front/docker-compose.gitlab.prod.yml")
+		confFront.buildFile(".templates/templates/docker-compose.preprod.yml", confFront.ProjectName+"/front/docker-compose.preprod.yml")
+		confFront.buildFile(".templates/templates/.env", confFront.ProjectName+"/front/.env")
 	}
 }
 
 // CreateComposeProdAndEnv TODO
 func (conf *Config) CreateComposeProdAndEnv() {
-	conf.buildFile("templates/docker-compose.prod.yml", conf.ProjectName+"/docker-compose.prod.yml")
-	conf.buildFile("templates/.env", conf.ProjectName+"/.env")
+	conf.buildFile(".templates/templates/docker-compose.prod.yml", conf.ProjectName+"/docker-compose.prod.yml")
+	conf.buildFile(".templates/templates/.env", conf.ProjectName+"/.env")
 }
