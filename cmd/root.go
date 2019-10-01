@@ -11,6 +11,7 @@ var rootCmd = &cobra.Command{
 	Use: "progen",
 	Short: "",
 	Long: "",
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
 	},

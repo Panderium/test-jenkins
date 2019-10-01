@@ -14,15 +14,6 @@ import (
 
 func init() {
 	rootCmd.AddCommand(createCmd)
-
-	_, err := git.PlainClone(".templates", false, &git.CloneOptions{
-		URL:      "http://10.1.38.31/afougerouse/templates.git",
-		Progress: os.Stdout,
-	})
-	if err != nil {
-		fmt.Errorf("Impossible de récupérer les templates")
-		os.Exit(1)
-	}
 }
 
 var createCmd = &cobra.Command{
@@ -36,6 +27,14 @@ var createCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		_, err := git.PlainClone(".templates", false, &git.CloneOptions{
+			URL:      "http://10.1.38.31/afougerouse/templates.git",
+			Progress: os.Stdout,
+		})
+		if err != nil {
+			fmt.Errorf("Impossible de récupérer les templates")
+			os.Exit(1)
+		}
 
 		defer os.RemoveAll(".templates")
 
