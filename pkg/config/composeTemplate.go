@@ -74,7 +74,7 @@ func (conf *Config) buildFile(templateFile, file string) {
 
 }
 
-// CreateComposeAndEnv TODO
+// CreateComposeAndEnv create docker-compose*yml and .env for the different parts of the project 
 func (conf *Config) CreateComposeAndEnv() {
 	confBack, confFront := conf.splitConfig()
 	if _, err := os.Stat(confBack.ProjectName + "/back"); !os.IsNotExist(err) {
@@ -93,7 +93,7 @@ func (conf *Config) CreateComposeAndEnv() {
 	}
 }
 
-// CreateComposeProdAndEnv TODO
+// CreateComposeProdAndEnv create the docker-compose.prod.yml and .env files at the root directory of the project
 func (conf *Config) CreateComposeProdAndEnv() {
 	conf.buildFile(".templates/compose/docker-compose.prod.yml", conf.ProjectName+"/docker-compose.prod.yml")
 	conf.buildFile(".templates/compose/.env", conf.ProjectName+"/.env")

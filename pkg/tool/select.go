@@ -15,7 +15,7 @@ type Tool struct {
 	Link   []string
 }
 
-// LinkWith TODO t bdd, tool other tools
+// LinkWith ask the user at what part of the project he wants to link his database.s and add it to the .conf.yaml file
 func (t *Tool) LinkWith(tool *Tool) {
 	var response string
 	if tool.Values != nil && tool.Values[0] != "aucune" {
@@ -70,7 +70,7 @@ func (t *Tool) multiSelect() {
 	t.Values = append(t.Values, values...)
 }
 
-// Select TODO doc
+// Select target the right select to display according to the type of the tool the user has to choose
 func (t *Tool) Select() {
 	switch t.Name {
 	case "BDD":

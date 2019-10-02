@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Config TODO
+// Config structure of the .conf.yaml files. It owns all the needs to construct all docker-compose files
 type Config struct {
 	ProjectName string
 	Services    []tool.Tool
@@ -30,7 +30,8 @@ func addCIFiles(dest string) error {
 	return nil
 }
 
-// RetrieveFiles TODO
+// RetrieveFiles retrieve all the files needed to build and configure technologies chosen by the user
+// e.g. Dockerfiles, create app, etc...
 func (c *Config) RetrieveFiles() {
 	var src string
 	var dest string
@@ -52,19 +53,19 @@ func (c *Config) RetrieveFiles() {
 	}
 }
 
-// UpdateProjectName TODO
+// UpdateProjectName change the variable ProjectName in c with name
 func (c *Config) UpdateProjectName(name string) {
 	c.ProjectName = name
 }
 
-// UpdateServices TODO
+// UpdateServices add tool t to the array Services of c
 func (c *Config) UpdateServices(t tool.Tool) {
 	if t.Values != nil && t.Values[0] != "aucune" {
 		c.Services = append(c.Services, t)
 	}
 }
 
-// BuildConfigFile TODO
+// BuildConfigFile build the files .conf.yaml thanks to the Config c.
 func (c *Config) BuildConfigFile() []byte {
 	yamlFile, err := yaml.Marshal(&c)
 	if err != nil {

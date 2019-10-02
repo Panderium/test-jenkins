@@ -8,7 +8,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/config"
 )
 
-// GitInit TODO
+// GitInit perform a git init in the folders of the project and add a remote according to the will of the holy user
 func (c *Config) GitInit() {
 	for _, service := range c.Services {
 		if service.Name != "BDD" {
