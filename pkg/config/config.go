@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"io/ioutil"
 
 	"../tool"
 	"../utils"
@@ -73,4 +74,21 @@ func (c *Config) BuildConfigFile() []byte {
 		os.Exit(1)
 	}
 	return yamlFile
+}
+
+// LoadConfigFile load and put the config files of the project in path
+func LoadConfigFile(path string) Config {
+	config := Config{}
+	yamlFile, err :=ioutil.ReadFile(path + "/.conf.yaml")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return config
 }

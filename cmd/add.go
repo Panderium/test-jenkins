@@ -1,48 +1,63 @@
 package cmd
 
 import (
-	//"fmt"
+	"os"
+	"fmt"
+	
+	"../pkg/tool"
+	"../pkg/config"
 
 	"github.com/spf13/cobra"
 )
 
+// Tools flag for adding tool
+var Tools string
+
 func init() {
 	rootCmd.AddCommand(addCmd)
-	addCmd.AddCommand(frameworkCmd, languageCmd, bddCmd)
 }
 
 var addCmd = &cobra.Command {
-	Use: "add",
-	Short: "Add framework(s), BDD(s) or language(s)",
-	Long: "", // TODO
+	Use: "add [bbd/front/back] [path to your to project]",
+	Short: "Add BDD and language or framework to your backend or frontend",
+	Long: "",
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-
-	},
-}
-
-var frameworkCmd = &cobra.Command {
-	Use: "framework",
-	Short: "Add a new framework to your project",
-	Long: "", // TODO
-	Run: func(cmd *cobra.Command, args []string) {
-
-	},
-}
-
-var languageCmd = &cobra.Command {
-	Use: "language",
-	Short: "Add a new language to your project",
-	Long: "", // TODO
-	Run: func(cmd *cobra.Command, args []string) {
+		if _, err := os.Stat(args[1]); os.IsNotExist(err) {
+			fmt.Println("Chemin vers le projet invalide")
+			os.Exit(1)
+		}
 		
 	},
 }
 
-var bddCmd = &cobra.Command {
+var bbdCmd = &cobra.Command {
 	Use: "bdd",
 	Short: "Add a new bdd to your project",
-	Long: "", // TODO
+	Long: "",
 	Run: func(cmd *cobra.Command, args []string) {
+		conf := config.LoadConfigFile(args[0])
+		conf.Services[].select()
 		
+	},
+}
+
+var backCmd = &cobra.Command {
+	Use: "back",
+	Short: "Add a new back to your project",
+	Long: "",
+	Run: func(cmd *cobra.Command, args []string) {
+		conf := config.LoadConfigFile(args[0])
+		conf.Services[].select()
+	},
+}
+
+var frontCmd = &cobra.Command {
+	Use: "front",
+	Short: "Add a new front to your project",
+	Long: "",
+	Run: func(cmd *cobra.Command, args []string) {
+		conf := config.LoadConfigFile(args[0])
+		conf.Services[].select()
 	},
 }
