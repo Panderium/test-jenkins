@@ -6,7 +6,19 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+
+	"../tool"
 )
+
+// SearchIndex range over some tools and return the index matching the according name
+func SearchIndex(t []tool.Tool, name string) int {
+	for k, v := range t {
+		if v.Name == name {
+			return k
+		}
+	}
+	return -1
+} 
 
 // CopyFile copies a single file from src to dst
 func CopyFile(src, dst string) error {

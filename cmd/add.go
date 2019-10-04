@@ -4,8 +4,9 @@ import (
 	"os"
 	"fmt"
 	
-	"../pkg/tool"
+	
 	"../pkg/config"
+	"../pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -15,6 +16,7 @@ var Tools string
 
 func init() {
 	rootCmd.AddCommand(addCmd)
+	addCmd.AddCommand(bbdCmd, backCmd, frontCmd)
 }
 
 var addCmd = &cobra.Command {
@@ -32,32 +34,36 @@ var addCmd = &cobra.Command {
 }
 
 var bbdCmd = &cobra.Command {
-	Use: "bdd",
+	Use: "add bdd [path to your to project]",
 	Short: "Add a new bdd to your project",
 	Long: "",
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.LoadConfigFile(args[0])
-		conf.Services[].select()
-		
+		idx := utils.SearchIndex(conf.Services, "BDD")
+		conf.Services[idx].Select()
+		// retrieve files
+		// generate docker compose and dockerfiles
 	},
 }
 
 var backCmd = &cobra.Command {
-	Use: "back",
+	Use: "add back [path to your to project]",
 	Short: "Add a new back to your project",
 	Long: "",
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.LoadConfigFile(args[0])
-		conf.Services[].select()
+		idx := utils.SearchIndex(conf.Services, "Back")
+		conf.Services[idx].Select()
 	},
 }
 
 var frontCmd = &cobra.Command {
-	Use: "front",
+	Use: "add front [path to your to project]",
 	Short: "Add a new front to your project",
 	Long: "",
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.LoadConfigFile(args[0])
-		conf.Services[].select()
+		idx := utils.SearchIndex(conf.Services, "Front")
+		conf.Services[idx].Select()
 	},
 }
