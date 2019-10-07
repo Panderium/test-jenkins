@@ -49,11 +49,9 @@ var addCmd = &cobra.Command{
 
 		if idxBDD != -1 {
 			if idxBack != -1 {
-				fmt.Println("dsgf")
 				conf.Services[idxBDD].LinkWith(&conf.Services[idxBack])
 			}
 			if idxFront != -1 {
-				fmt.Println("dsgf")
 				conf.Services[idxBDD].LinkWith(&conf.Services[idxFront])
 			}
 		}
