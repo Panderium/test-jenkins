@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	"os"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 
 	"../tool"
 	"../utils"
@@ -21,10 +22,10 @@ func addCIFiles(dest string) error {
 	gitlabCIFile := ".templates/CI/.gitlab-ci.yml"
 	sonarQubeFile := ".templates/CI/sonar-scanner.sh"
 
-	if err :=utils.CopyFile(gitlabCIFile, dest + "/.gitlab-ci.yml"); err != nil {
+	if err := utils.CopyFile(gitlabCIFile, dest+"/.gitlab-ci.yml"); err != nil {
 		return err
 	}
-	if err := utils.CopyFile(sonarQubeFile, dest + "/sonar-scanner.sh"); err != nil {
+	if err := utils.CopyFile(sonarQubeFile, dest+"/sonar-scanner.sh"); err != nil {
 		return err
 	}
 
@@ -39,16 +40,18 @@ func (c *Config) RetrieveFiles() {
 
 	for _, service := range c.Services {
 		if service.Name != "BDD" {
-			src = ".templates/" + service.Name + "/" + service.Values[0]
-			dest = c.ProjectName + "/" + service.Name
-			err := utils.CopyDir(src, dest)
-			if err != nil {
-				fmt.Printf("imposible de récupérer les éléments pour construire le %s\n", service.Name)
-			}
-			err = addCIFiles(dest)
-			if err != nil {
-				fmt.Printf("imposible de récupérer les fichiers de CI/CD pour le %s\n", service.Name)
-				fmt.Println(err)
+			for k := range service.Values {
+				src = filepath.Join(".templates", service.Name, service.Values[k])
+				dest = filepath.Join(c.ProjectName, service.Name, service.Values[k])
+				err := utils.CopyDir(src, dest)
+				if err != nil {
+					fmt.Printf("imposible de récupérer les éléments pour construire le %s\n", service.Name)
+				}
+				err = addCIFiles(dest)
+				if err != nil {
+					fmt.Printf("imposible de récupérer les fichiers de CI/CD pour le %s\n", service.Name)
+					fmt.Println(err)
+				}
 			}
 		}
 	}
@@ -79,7 +82,7 @@ func (c *Config) BuildConfigFile() []byte {
 // LoadConfigFile load and put the config files of the project in path
 func LoadConfigFile(path string) Config {
 	config := Config{}
-	yamlFile, err :=ioutil.ReadFile(path + "/.conf.yaml")
+	yamlFile, err := ioutil.ReadFile(path + "/.conf.yaml")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
