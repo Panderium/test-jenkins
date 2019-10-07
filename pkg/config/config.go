@@ -18,6 +18,16 @@ type Config struct {
 	Services    []tool.Tool
 }
 
+// SearchServiceIndex range over some tools and return the index matching the according name
+func (c *Config) SearchServiceIndex(name string) int {
+	for k, v := range c.Services {
+		if v.Name == name {
+			return k
+		}
+	}
+	return -1
+}
+
 func addCIFiles(dest string) error {
 	gitlabCIFile := ".templates/CI/.gitlab-ci.yml"
 	sonarQubeFile := ".templates/CI/sonar-scanner.sh"
@@ -42,7 +52,7 @@ func (c *Config) RetrieveFiles() {
 		if service.Name != "BDD" {
 			for k := range service.Values {
 				src = filepath.Join(".templates", service.Name, service.Values[k])
-				dest = filepath.Join(c.ProjectName, service.Name, service.Values[k])
+				dest = filepath.Join(c.ProjectName, service.Values[k])
 				err := utils.CopyDir(src, dest)
 				if err != nil {
 					fmt.Printf("imposible de récupérer les éléments pour construire le %s\n", service.Name)
@@ -64,9 +74,13 @@ func (c *Config) UpdateProjectName(name string) {
 
 // UpdateServices add tool t to the array Services of c
 func (c *Config) UpdateServices(t tool.Tool) {
-	if t.Values != nil && t.Values[0] != "aucune" {
+	idx := c.SearchServiceIndex(t.Name)
+	if t.Values != nil && idx == -1 {
 		c.Services = append(c.Services, t)
+	} else if t.Values != nil && idx != -1 {
+		c.Services[idx].Values = append(c.Services[idx].Values, t.Values...)
 	}
+	
 }
 
 // BuildConfigFile build the files .conf.yaml thanks to the Config c.
@@ -82,7 +96,7 @@ func (c *Config) BuildConfigFile() []byte {
 // LoadConfigFile load and put the config files of the project in path
 func LoadConfigFile(path string) Config {
 	config := Config{}
-	yamlFile, err := ioutil.ReadFile(path + "/.conf.yaml")
+	yamlFile, err := ioutil.ReadFile(path + "/.config.yaml")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

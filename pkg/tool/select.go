@@ -18,18 +18,21 @@ type Tool struct {
 // LinkWith ask the user at what part of the project he wants to link his database.s and add it to the .conf.yaml file
 func (t *Tool) LinkWith(tool *Tool) {
 	var response string
-	if tool.Values != nil && tool.Values[0] != "aucune" {
-		for _, value := range t.Values {
-			prompt := &survey.Select{
-				Message: "Est-ce que la base de données " + value + " doit être reliée au " + tool.Name,
-				Options: []string{"oui", "non"},
-			}
-			survey.AskOne(prompt, &response)
-			if response == "oui" {
-				tool.Link = append(tool.Link, value)
-				t.Link = append(t.Link, tool.Name)
-			}
+
+	for k, bdd := range t.Values {
+		if k+1 <= len(t.Link) {
+			continue
 		}
+		prompt := &survey.Select{
+			Message: "Est-ce que la base de données " + bdd + " doit être reliée au " + tool.Name,
+			Options: []string{"oui", "non"},
+		}
+		survey.AskOne(prompt, &response)
+		if response == "oui" {
+			tool.Link = append(tool.Link, bdd)
+			t.Link = append(t.Link, tool.Name)
+		}
+
 	}
 }
 
@@ -57,7 +60,10 @@ func (t *Tool) onlyOneSelect() {
 		Options: append(t.getOption(), "aucune"),
 	}
 	survey.AskOne(prompt, &value)
-	t.Values = append(t.Values, value)
+
+	if value != "aucune" {
+		t.Values = append(t.Values, value)
+	}
 }
 
 func (t *Tool) multiSelect() {

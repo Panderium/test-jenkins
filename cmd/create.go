@@ -9,7 +9,6 @@ import (
 	"../pkg/tool"
 
 	"github.com/spf13/cobra"
-	git "gopkg.in/src-d/go-git.v4"
 )
 
 func init() {
@@ -27,14 +26,7 @@ var createCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		_, err := git.PlainClone(".templates", false, &git.CloneOptions{
-			URL:      "http://10.1.38.31/afougerouse/templates.git",
-			Progress: os.Stdout,
-		})
-		if err != nil {
-			fmt.Errorf("Impossible de récupérer les templates")
-			os.Exit(1)
-		}
+		config.CloneTemplates()
 
 		defer os.RemoveAll(".templates")
 
@@ -59,13 +51,13 @@ var createCmd = &cobra.Command{
 		// Link bdd(s) with front and/or back
 		bdd.LinkWith(&back)
 		bdd.LinkWith(&front)
-
+		
 		// update config files with tools(services)
 		conf.UpdateServices(bdd)
 		conf.UpdateServices(back)
 		conf.UpdateServices(front)
 
-		// retrieve files and put it in tmp/bdd, back and front folders
+		// retrieve files and put it in  back and front folders
 		conf.RetrieveFiles()
 
 		// build .config.yaml
