@@ -1,7 +1,7 @@
 pipeline {
     agent { docker { image 'golang' } }
     stages {
-        stage('testy') {
+        stage('build') {
             steps {
                 sh 'make compile'
             }
